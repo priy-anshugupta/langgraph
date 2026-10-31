@@ -664,12 +664,11 @@ class PersistentDict(defaultdict):
         tempname = self.filename + ".tmp"
         fileobj = open(tempname, "wb" if self.format == "pickle" else "w")
         try:
-            self.dump(fileobj)
+            with fileobj:
+                self.dump(fileobj)
         except Exception:
             os.remove(tempname)
             raise
-        finally:
-            fileobj.close()
         shutil.move(tempname, self.filename)  # atomic commit
         if self.mode is not None:
             os.chmod(self.filename, self.mode)
